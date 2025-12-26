@@ -1,69 +1,98 @@
 {% extends "base_app.html" %}
 {% block content %}
+<h6 class="mb-1">Manager Dashboard</h6>
+<p style="font-size:11px;color:#6b7280">Welcome {{ user.get_full_name|default:user.username }}</p>
 
-<h3 class="mb-3">Manager Dashboard</h3>
+<div style="display:flex;gap:18px;align-items:flex-start">
+  <div style="flex:1">
+    <div style="display:flex;gap:12px;margin-bottom:12px">
+      <div class="stat-box p-2">
+        <small>Total Employees</small>
+        <div style="font-weight:700">{{ total_employees }}</div>
+      </div>
+      <div class="stat-box p-2">
+        <small>Pending Requests</small>
+        <div style="font-weight:700">{{ pending }}</div>
+      </div>
+      <div class="stat-box p-2">
+        <small>Approved Requests</small>
+        <div style="font-weight:700">{{ approved }}</div>
+      </div>
+    </div>
 
-<div class="row">
+    <h6>Pending Requests</h6>
+    {% if pending_leaves %}
+    <div class="card p-2 mb-3">
+     <table class="table table-sm mb-0">
+      <thead>
+       <tr>
+        <th>Employee</th>
+        <th>Dates</th>
+        <th>Type</th>
+        <th>Reason</th>
+        <th>Submitted</th>
+        <th>Action</th>
+       </tr>
+      </thead>
+      <tbody>
+       {% for l in pending_leaves %}
+       <tr>
+        <td>
+          <strong>{{ l.user.get_full_name|default:l.user.username }}</strong><br>
+          <small class="text-muted">{{ l.user.email }}</small>
+        </td>
+        <td>{{ l.start_date|date:"M j, Y" }} – {{ l.end_date|date:"M j, Y" }}</td>
+        <td>{{ l.get_leave_type_display }}</td>
+        <td style="max-width:240px;">{{ l.reason|linebreaksbr }}</td>
+        <td><small class="text-muted">{{ l.created_at|date:"M j, Y H:i" }}</small></td>
+        <td>
+          <form method="post" action="{% url 'leaves:approve_leave' l.id %}" style="margin-bottom:6px;">
+            {% csrf_token %}
+            <input name="comment" class="form-control form-control-sm" placeholder="Optional comment">
+            <button class="btn-slate btn-sm mt-1" type="submit">Approve</button>
+          </form>
 
- <div class="col-md-3">
-  <div class="stat-box">
-   <h6>Total Employees</h6>
-   <h3>50</h3>
+          <form method="post" action="{% url 'leaves:reject_leave' l.id %}">
+            {% csrf_token %}
+            <input name="comment" class="form-control form-control-sm" placeholder="Optional comment">
+            <button class="btn btn-danger btn-sm mt-1" type="submit">Reject</button>
+          </form>
+
+          {% if l.manager_comment %}
+            <div class="mt-1"><small><strong>Manager note:</strong> {{ l.manager_comment|linebreaksbr }}</small></div>
+          {% endif %}
+        </td>
+       </tr>
+       {% endfor %}
+      </tbody>
+     </table>
+    </div>
+    {% else %}
+     <div class="alert alert-secondary">No pending requests.</div>
+    {% endif %}
   </div>
- </div>
 
- <div class="col-md-3">
-  <div class="stat-box">
-   <h6>Pending Approvals</h6>
-   <h3>7</h3>
-  </div>
- </div>
-
- <div class="col-md-3">
-  <div class="stat-box">
-   <h6>Approved Leaves</h6>
-   <h3>18</h3>
-  </div>
- </div>
-
- <div class="col-md-3">
-  <div class="stat-box">
-   <h6>Rejected</h6>
-   <h3>3</h3>
-  </div>
- </div>
-
+  <aside style="width:320px">
+    <div class="card p-2">
+      <h6 style="margin-top:0">Employees ({{ total_employees }})</h6>
+      <ul style="list-style:none;padding-left:0;margin:0">
+        {% for e in employees %}
+        <li style="padding:8px 6px;border-bottom:1px solid #f3f6f9">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div>
+              <strong>{{ e.user.get_full_name|default:e.user.username }}</strong><br>
+              <small class="text-muted">{{ e.user.email }}</small><br>
+              <small class="text-muted">Role: {{ e.role|title }}</small>
+            </div>
+            <div style="text-align:right">
+              <div style="font-weight:700">{{ e.remaining }}</div>
+              <small class="text-muted">Days left</small>
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </aside>
 </div>
-
-
-<h5 class="mt-4 mb-2">Management Actions</h5>
-
-<div class="row">
-
- <div class="col-md-4">
-  <div class="card p-3">
-   <h6>Pending Leave Requests</h6>
-   <p style="font-size:14px;color:#555">
-    Review and approve or reject employee leaves.
-   </p>
-   <button onclick="window.location.href='/pending-leaves/'" class="btn btn-warning">
-    View Pending
-   </button>
-  </div>
- </div>
-
- <div class="col-md-4">
-  <div class="card p-3">
-   <h6>Leave Calendar</h6>
-   <p style="font-size:14px;color:#555">
-    See who is on leave in a calendar view.
-   </p>
-   <button onclick="window.location.href='/leave-calendar/'" class="btn btn-success">
-    Open Calendar
-   </button>
-  </div>
- </div>
-
-</div>
-
 {% endblock %}

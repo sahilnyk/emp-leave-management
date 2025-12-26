@@ -1,0 +1,49 @@
+{% extends "base_app.html" %}
+{% block content %}
+
+<h6>Pending Leave Requests</h6>
+
+<table class="table table-bordered table-sm bg-white">
+<thead>
+<tr>
+<th>Employee</th>
+<th>Type</th>
+<th>Dates</th>
+<th>Reason</th>
+<th>Submitted</th>
+<th>Action</th>
+</tr>
+</thead>
+<tbody>
+{% for l in leaves %}
+<tr>
+<td>{{ l.user.get_full_name|default:l.user.username }}<br><small class="text-muted">{{ l.user.email }}</small></td>
+<td>{{ l.get_leave_type_display }}</td>
+<td>{{ l.start_date }} → {{ l.end_date }}</td>
+<td style="max-width:280px;">{{ l.reason|linebreaksbr }}</td>
+<td><small class="text-muted">{{ l.created_at|date:"M j, Y H:i" }}</small></td>
+<td>
+  <form method="post" action="{% url 'leaves:approve_leave' l.id %}" style="display:inline-block;margin-bottom:6px;">
+    {% csrf_token %}
+    <input type="text" name="comment" placeholder="Optional comment" class="form-control form-control-sm" style="width:220px;margin-bottom:6px;">
+    <button class="btn-slate btn-sm" type="submit">Approve</button>
+  </form>
+
+  <form method="post" action="{% url 'leaves:reject_leave' l.id %}" style="display:inline-block;">
+    {% csrf_token %}
+    <input type="text" name="comment" placeholder="Optional comment" class="form-control form-control-sm" style="width:220px;margin-bottom:6px;">
+    <button class="btn btn-danger btn-sm" type="submit">Reject</button>
+  </form>
+
+  {% if l.manager_comment %}
+    <div style="margin-top:6px"><small><strong>Manager note:</strong> {{ l.manager_comment|linebreaksbr }}</small></div>
+  {% endif %}
+</td>
+</tr>
+{% empty %}
+<tr><td colspan="6" class="text-center">No pending requests.</td></tr>
+{% endfor %}
+</tbody>
+</table>
+
+{% endblock %}

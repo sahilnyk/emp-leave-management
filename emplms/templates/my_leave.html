@@ -1,0 +1,79 @@
+{% extends "base_app.html" %}
+
+{% block content %}
+<style>
+.leaves-container{max-width:980px;margin:18px auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;gap:12px}
+.btn-apply{background:#0f172a;color:#fff;padding:8px 12px;border-radius:6px;text-decoration:none;font-size:14px}
+.btn-back{background:transparent;color:#0f172a;padding:6px 10px;border-radius:6px;border:1px solid #e6eef8;text-decoration:none;font-size:14px}
+.summary{font-size:13px;color:#374151}
+.table{width:100%;border-collapse:collapse;margin-top:12px}
+.table th,.table td{padding:10px 8px;border-bottom:1px solid #eef2f7;text-align:left;font-size:14px}
+.status-badge{display:inline-block;padding:4px 8px;border-radius:999px;font-size:12px;color:#fff}
+.status-approved{background:#10b981} /* green */
+.status-pending{background:#f59e0b}  /* amber */
+.status-rejected{background:#ef4444} /* red */
+.status-other{background:#6b7280}    /* gray */
+.small-reason{color:#6b7280;font-size:13px;margin-top:6px}
+.empty{padding:22px;text-align:center;color:#6b7280}
+.date-muted{color:#6b7280;font-size:13px}
+</style>
+
+<div class="leaves-container">
+  <div class="page-header">
+    <div>
+      <h3 style="margin:0">My Leaves</h3>
+      <div class="summary">You have <strong>{{ leaves|length }}</strong> request{% if leaves|length != 1 %}s{% endif %}.</div>
+    </div>
+
+    <div style="display:flex;gap:8px;align-items:center">
+      <a class="btn-back" href="/dashboard/">← Back to Dashboard</a>
+      <a class="btn-apply" href="/leaves/apply/">Apply for Leave</a>
+    </div>
+  </div>
+
+  {% if leaves %}
+    <table class="table" role="table" aria-label="My leave requests">
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Dates</th>
+          <th>Status</th>
+          <th>Reason</th>
+          <th>Submitted</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for leave in leaves %}
+        <tr>
+          <td>{{ leave.get_leave_type_display }}</td>
+          <td>
+            <div>{{ leave.start_date|date:"M j, Y" }} &ndash; {{ leave.end_date|date:"M j, Y" }}</div>
+            {% if leave.start_date and leave.end_date %}
+              <div class="date-muted">({{ leave.start_date|date:"D, d M Y" }} to {{ leave.end_date|date:"D, d M Y" }})</div>
+            {% endif %}
+          </td>
+          <td>
+            {% if leave.status|lower == "approved" %}
+              <span class="status-badge status-approved">Approved</span>
+            {% elif leave.status|lower == "rejected" %}
+              <span class="status-badge status-rejected">Rejected</span>
+            {% else %}
+              <span class="status-badge status-pending">{{ leave.status|default:"Pending" }}</span>
+            {% endif %}
+          </td>
+          <td>
+            <div>{{ leave.reason|linebreaksbr }}</div>
+          </td>
+          <td class="date-muted">{{ leave.created_at|date:"M j, Y H:i" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <div class="empty">
+      No leave requests yet. Click <a href="/leaves/apply/">Apply for Leave</a> to submit your first request.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
