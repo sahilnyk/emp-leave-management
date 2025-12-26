@@ -1,0 +1,61 @@
+{% extends "base_app.html" %}
+{% block content %}
+
+<h5 class="mb-2">Employee Dashboard</h5>
+<p style="font-size:11px;color:#6b7280">
+Welcome {{ user.username }}
+</p>
+
+<div class="row">
+
+ <div class="col-md-4">
+  <div class="stat-box">
+   <small>Total Leave Balance</small>
+   <h5>12 Days</h5>
+  </div>
+ </div>
+
+ <div class="col-md-4">
+  <div class="stat-box">
+   <small>Approved Leaves</small>
+   <h5>4</h5>
+  </div>
+ </div>
+
+ <div class="col-md-4">
+  <div class="stat-box">
+   <small>Pending Leaves</small>
+   <h5>2</h5>
+  </div>
+ </div>
+
+</div>
+
+
+<h6 class="mt-3 mb-1">Actions</h6>
+
+<div class="row">
+
+ <div class="col-md-4">
+  <div class="card p-2">
+   <small>Apply for Leave</small>
+   <button onclick="window.location.href='/apply-leave/'"
+   class="btn-slate mt-2">
+    Apply Leave
+   </button>
+  </div>
+ </div>
+
+ <div class="col-md-4">
+  <div class="card p-2">
+   <small>My Leave Requests</small>
+   <button onclick="window.location.href='/my-leaves/'"
+   class="btn-slate mt-2">
+    View Requests
+   </button>
+  </div>
+ </div>
+
+</div>
+
+{% endblock %}

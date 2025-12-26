@@ -1,0 +1,101 @@
+{% extends "base_auth.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Create Account</h2>
+
+<form method="post" id="regForm">
+{% csrf_token %}
+{{ form|crispy }}
+
+<div class="helper" id="regHelp" style="display:none">
+Complete fields properly
+</div>
+
+<div id="passwordStrengthBox" style="display:none;margin-top:6px">
+ <div class="progress" style="height:6px;border-radius:6px;">
+  <div id="strengthBar" class="progress-bar" style="width:0%"></div>
+ </div>
+ <small id="strengthText" style="font-size:11px;color:#6b7280"></small>
+</div>
+
+{% if form_errors %}
+<div class="error-box">{{ form_errors }}</div>
+{% endif %}
+
+<button class="btn-slate mt-2" type="submit" style="transition:none;">
+Register
+</button>
+</form>
+
+<p class="text-center mt-1">
+<a href="/" class="text-primary text-decoration-none">Login</a>
+</p>
+
+
+<script>
+const inputs = document.querySelectorAll("input, select");
+const regHelp = document.getElementById("regHelp");
+
+inputs.forEach(i=>{
+ i.addEventListener("focus",()=> regHelp.style.display="block");
+ i.addEventListener("input",()=>{
+  regHelp.style.display = i.value.trim() !== "" ? "none" : "block";
+ });
+});
+
+const password = document.getElementById("id_password");
+const bar = document.getElementById("strengthBar");
+const text = document.getElementById("strengthText");
+const box = document.getElementById("passwordStrengthBox");
+
+password.addEventListener("focus",()=> box.style.display="block");
+
+password.addEventListener("input", ()=>{
+ let v = password.value;
+ let score = 0;
+
+ if(v.length >= 6) score++;
+ if(/[A-Z]/.test(v)) score++;
+ if(/[0-9]/.test(v)) score++;
+ if(/[a-z]/.test(v)) score++;
+
+ if(score === 0){
+  bar.style.width="0%";
+  text.innerHTML="";
+ }
+
+ if(score === 1){
+  bar.style.width="25%";
+  bar.style.background="#ef4444";
+  text.innerHTML="Weak";
+ }
+
+ if(score === 2){
+  bar.style.width="50%";
+  bar.style.background="#eab308";
+  text.innerHTML="Fair";
+ }
+
+ if(score === 3){
+  bar.style.width="75%";
+  bar.style.background="#3b82f6";
+  text.innerHTML="Good";
+ }
+
+ if(score === 4){
+  bar.style.width="100%";
+  bar.style.background="#22c55e";
+  text.innerHTML="Strong";
+ }
+});
+
+document.getElementById("regForm").addEventListener("submit",(e)=>{
+ let v = password.value;
+ if(v.length < 6 || !/[A-Z]/.test(v) || !/[0-9]/.test(v)){
+  alert("Password must be at least 6 chars, 1 uppercase, 1 number");
+  e.preventDefault();
+ }
+});
+</script>
+{% endblock %}

@@ -1,0 +1,42 @@
+{% extends "base_auth.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2>Login</h2>
+
+<p class="text-center text-muted mb-3">
+Access your dashboard securely
+</p>
+
+<form method="post" class="mt-2">
+{% csrf_token %}
+{{ form|crispy }}
+
+<div id="loginHelp" class="helper" style="display:none">
+Enter your correct username & password
+</div>
+
+{% if form_errors %}
+<div class="error-box">{{ form_errors }}</div>
+{% endif %}
+
+<button class="btn-slate mt-2" type="submit">Login</button>
+</form>
+
+<p class="text-center mt-3">
+Don't have an account?
+<a href="/register/" class="text-primary text-decoration-none">Register</a>
+</p>
+
+<script>
+const loginInputs = document.querySelectorAll("input");
+const loginHelp = document.getElementById("loginHelp");
+
+loginInputs.forEach(i=>{
+ i.addEventListener("focus", ()=> loginHelp.style.display="block");
+ i.addEventListener("input", ()=>{
+  loginHelp.style.display = i.value.trim() !== "" ? "none" : "block";
+ });
+});
+</script>
+{% endblock %}
