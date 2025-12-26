@@ -9,4 +9,5 @@ urlpatterns = [
     path('pending/', views.pending_requests, name="pending_requests"),
     path('approve/<int:id>/', views.approve_leave, name="approve_leave"),
     path('reject/<int:id>/', views.reject_leave, name="reject_leave"),
+    path('calendar/', views.leave_calendar, name="leave_calendar"),
 ]

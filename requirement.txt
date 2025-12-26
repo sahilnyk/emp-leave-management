@@ -5,7 +5,9 @@ django-crispy-forms==2.5
 django-environ==0.12.0
 Faker==39.0.0
 mysqlclient==2.2.7
+python-dateutil==2.9.0.post0
 pytz==2025.2
+six==1.17.0
 sqlparse==0.5.5
 typing_extensions==4.15.0
 tzdata==2025.3

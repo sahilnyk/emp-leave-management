@@ -1,0 +1,67 @@
+{% extends "base_app.html" %}
+{% load calendar_tags %}
+{% block content %}
+
+<style>
+.calendar-container{max-width:1200px;margin:20px auto;background:#fff;padding:20px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.calendar-nav{display:flex;gap:10px}
+.calendar-nav a{padding:8px 16px;background:#0f172a;color:#fff;text-decoration:none;border-radius:6px;font-size:14px}
+.calendar-table{width:100%;border-collapse:collapse;table-layout:fixed}
+.calendar-table th{background:#f8fafc;padding:12px;text-align:center;border:1px solid #e2e8f0;font-weight:600;color:#475569}
+.calendar-table td{border:1px solid #e2e8f0;padding:8px;vertical-align:top;height:100px;position:relative}
+.day-number{font-weight:600;color:#334155;margin-bottom:4px}
+.leave-item{font-size:11px;background:#dbeafe;color:#1e40af;padding:2px 6px;margin:2px 0;border-radius:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.today{background:#fef3c7}
+.empty-day{background:#f8fafc}
+</style>
+
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h4 style="margin:0">Leave Calendar - {{ month_name }} {{ year }}</h4>
+    <div class="calendar-nav">
+      <a href="?year={{ prev_year }}&month={{ prev_month }}">← Previous</a>
+      <a href="?year={{ today.year }}&month={{ today.month }}">Today</a>
+      <a href="?year={{ next_year }}&month={{ next_month }}">Next →</a>
+    </div>
+  </div>
+
+  <table class="calendar-table">
+    <thead>
+      <tr>
+        <th>Mon</th>
+        <th>Tue</th>
+        <th>Wed</th>
+        <th>Thu</th>
+        <th>Fri</th>
+        <th>Sat</th>
+        <th>Sun</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for week in calendar %}
+        <tr>
+          {% for day in week %}
+            {% if day == 0 %}
+              <td class="empty-day"></td>
+            {% else %}
+              {% make_date day month year as date_obj %}
+              <td {% if year == today.year and month == today.month and day == today.day %}class="today"{% endif %}>
+                <div class="day-number">{{ day }}</div>
+                {% if date_obj %}
+                  {% for leave_info in leave_map|get_item:date_obj %}
+                    <div class="leave-item" title="{{ leave_info.user }} - {{ leave_info.type }}">
+                      {{ leave_info.user }}
+                    </div>
+                  {% endfor %}
+                {% endif %}
+              </td>
+            {% endif %}
+          {% endfor %}
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
