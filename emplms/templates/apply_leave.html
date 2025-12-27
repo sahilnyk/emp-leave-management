@@ -1,91 +1,56 @@
 {% extends "base_app.html" %}
+{% load crispy_forms_tags %}
 {% block content %}
 
-<style>
-.form-box{
- width:360px;
- background:#ffffff;
- border-radius:10px;
- padding:18px;
- box-shadow:0 8px 22px rgba(0,0,0,0.08);
- border:1px solid #d1d5db;
- font-size:12px;
-}
-.form-control, .form-select{
- height:36px;
- border-radius:6px;
- font-size:12px;
- border:1px solid #cdd5df;
-}
-.form-control:focus, .form-select:focus, textarea:focus{
- border-color:#2c8eaf;
- box-shadow:none;
-}
-textarea{
- font-size:12px;
- border-radius:6px;
- border:1px solid #cdd5df;
-}
-.success-box{
- background:#d1fae5;
- border:1px solid #6ee7b7;
- padding:6px;
- border-radius:6px;
- color:#065f46;
- font-size:11px;
- margin-bottom:6px;
-}
-.error-box {
- background:#fee2e2;
- border-color:#fca5a5;
- color:#7f1d1d;
- padding:6px;
- border-radius:6px;
- font-size:11px;
- margin-bottom:6px;
-}
-</style>
-
 <div style="display:flex;justify-content:center;align-items:center;min-height:65vh">
- <div class="form-box">
+ <div style="width:100%;max-width:480px;background:#ffffff;border-radius:8px;padding:2rem;border:1px solid #e2e8f0;box-shadow:0 2px 4px rgba(0,0,0,0.05)">
 
-  {% if form.non_field_errors %}
-   <div class="error-box" style="background:#fee2e2;border-color:#fca5a5;color:#7f1d1d;margin-bottom:8px;">
-    {{ form.non_field_errors }}
-   </div>
-  {% endif %}
-
-  <h6 class="mb-1">Apply for Leave</h6>
-  <p style="font-size:11px;color:#6b7280">Submit your leave request</p>
+  <div class="mb-4">
+   <h4 class="mb-1">Apply for Leave</h4>
+   <p class="text-muted" style="font-size:13px">Submit your leave request</p>
+  </div>
 
   <form method="post">
    {% csrf_token %}
 
-   <label>Leave Type</label>
-   {{ form.leave_type }}
-   {% if form.leave_type.errors %}
-     <div class="text-danger small">{{ form.leave_type.errors }}</div>
-   {% endif %}
+   <div class="mb-3">
+    <label class="form-label">Leave Type</label>
+    {{ form.leave_type }}
+    {% if form.leave_type.errors %}
+     <div class="text-danger small mt-1">{{ form.leave_type.errors }}</div>
+    {% endif %}
+   </div>
 
-   <label class="mt-2">Start Date</label>
-   {{ form.start_date }}
-   {% if form.start_date.errors %}
-     <div class="text-danger small">{{ form.start_date.errors }}</div>
-   {% endif %}
+   <div class="mb-3">
+    <label class="form-label">Start Date</label>
+    {{ form.start_date }}
+    {% if form.start_date.errors %}
+     <div class="text-danger small mt-1">{{ form.start_date.errors }}</div>
+    {% endif %}
+   </div>
 
-   <label class="mt-2">End Date</label>
-   {{ form.end_date }}
-   {% if form.end_date.errors %}
-     <div class="text-danger small">{{ form.end_date.errors }}</div>
-   {% endif %}
+   <div class="mb-3">
+    <label class="form-label">End Date</label>
+    {{ form.end_date }}
+    {% if form.end_date.errors %}
+     <div class="text-danger small mt-1">{{ form.end_date.errors }}</div>
+    {% endif %}
+   </div>
 
-   <label class="mt-2">Reason</label>
-   {{ form.reason }}
-   {% if form.reason.errors %}
-     <div class="text-danger small">{{ form.reason.errors }}</div>
-   {% endif %}
+   <div class="mb-3">
+    <label class="form-label">Reason</label>
+    {{ form.reason }}
+    {% if form.reason.errors %}
+     <div class="text-danger small mt-1">{{ form.reason.errors }}</div>
+    {% endif %}
+   </div>
 
-   <button class="btn-slate mt-3" type="submit">Submit Request</button>
+   <div class="d-flex gap-2">
+    <a href="/dashboard/" class="btn btn-outline-slate flex-fill">Cancel</a>
+    <button class="btn btn-slate flex-fill" type="submit">
+     <i class="fas fa-paper-plane me-1"></i>Submit Request
+    </button>
+   </div>
   </form>
 
  </div>

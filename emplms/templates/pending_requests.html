@@ -1,49 +1,74 @@
 {% extends "base_app.html" %}
 {% block content %}
 
-<h6>Pending Leave Requests</h6>
+<div class="mb-4">
+ <h4 class="mb-1">
+  <i class="fas fa-hourglass-half me-2"></i>Pending Leave Requests
+ </h4>
+ <p class="text-muted mb-0" style="font-size:13px">Review and approve employee leave requests</p>
+</div>
 
-<table class="table table-bordered table-sm bg-white">
-<thead>
-<tr>
-<th>Employee</th>
-<th>Type</th>
-<th>Dates</th>
-<th>Reason</th>
-<th>Submitted</th>
-<th>Action</th>
-</tr>
-</thead>
-<tbody>
-{% for l in leaves %}
-<tr>
-<td>{{ l.user.get_full_name|default:l.user.username }}<br><small class="text-muted">{{ l.user.email }}</small></td>
-<td>{{ l.get_leave_type_display }}</td>
-<td>{{ l.start_date }} → {{ l.end_date }}</td>
-<td style="max-width:280px;">{{ l.reason|linebreaksbr }}</td>
-<td><small class="text-muted">{{ l.created_at|date:"M j, Y H:i" }}</small></td>
-<td>
-  <form method="post" action="{% url 'leaves:approve_leave' l.id %}" style="display:inline-block;margin-bottom:6px;">
-    {% csrf_token %}
-    <input type="text" name="comment" placeholder="Optional comment" class="form-control form-control-sm" style="width:220px;margin-bottom:6px;">
-    <button class="btn-slate btn-sm" type="submit">Approve</button>
-  </form>
-
-  <form method="post" action="{% url 'leaves:reject_leave' l.id %}" style="display:inline-block;">
-    {% csrf_token %}
-    <input type="text" name="comment" placeholder="Optional comment" class="form-control form-control-sm" style="width:220px;margin-bottom:6px;">
-    <button class="btn btn-danger btn-sm" type="submit">Reject</button>
-  </form>
-
-  {% if l.manager_comment %}
-    <div style="margin-top:6px"><small><strong>Manager note:</strong> {{ l.manager_comment|linebreaksbr }}</small></div>
-  {% endif %}
-</td>
-</tr>
-{% empty %}
-<tr><td colspan="6" class="text-center">No pending requests.</td></tr>
-{% endfor %}
-</tbody>
-</table>
+<div class="card">
+ {% if leaves %}
+  <div class="table-responsive">
+   <table class="table mb-0">
+    <thead>
+     <tr>
+      <th>Employee</th>
+      <th>Leave Period</th>
+      <th>Type</th>
+      <th>Reason</th>
+      <th>Submitted</th>
+      <th style="width:200px">Action</th>
+     </tr>
+    </thead>
+    <tbody>
+     {% for l in leaves %}
+     <tr>
+      <td>
+       <div class="fw-semibold">{{ l.user.get_full_name|default:l.user.username }}</div>
+       <small class="text-muted">{{ l.user.email }}</small>
+      </td>
+      <td>
+       <div style="font-size:13px">{{ l.start_date|date:"d M Y" }}</div>
+       <small class="text-muted">to {{ l.end_date|date:"d M Y" }}</small>
+      </td>
+      <td>
+       <span class="badge bg-secondary">{{ l.get_leave_type_display }}</span>
+      </td>
+      <td style="max-width:200px">
+       <small>{{ l.reason|truncatewords:15 }}</small>
+      </td>
+      <td>
+       <small class="text-muted">{{ l.created_at|date:"d M Y" }}</small>
+      </td>
+      <td>
+       <form method="post" action="{% url 'leaves:approve_leave' l.id %}" class="mb-2">
+        {% csrf_token %}
+        <input name="comment" class="form-control form-control-sm mb-1" placeholder="Comment (optional)" style="font-size:12px">
+        <button class="btn btn-sm btn-slate w-100" type="submit">
+         <i class="fas fa-check me-1"></i>Approve
+        </button>
+       </form>
+       <form method="post" action="{% url 'leaves:reject_leave' l.id %}">
+        {% csrf_token %}
+        <input name="comment" class="form-control form-control-sm mb-1" placeholder="Comment (optional)" style="font-size:12px">
+        <button class="btn btn-sm w-100" type="submit" style="background:#ef4444;color:white;border:none;border-radius:6px;padding:0.375rem 0.5rem;font-weight:500">
+         <i class="fas fa-times me-1"></i>Reject
+        </button>
+       </form>
+      </td>
+     </tr>
+     {% endfor %}
+    </tbody>
+   </table>
+  </div>
+ {% else %}
+  <div class="text-center text-muted py-5">
+   <i class="fas fa-inbox fa-3x mb-3 d-block" style="opacity:0.3"></i>
+   <p>No pending requests</p>
+  </div>
+ {% endif %}
+</div>
 
 {% endblock %}
